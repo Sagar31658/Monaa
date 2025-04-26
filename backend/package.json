@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Monaa, A smart way to keep track of your money and expenses.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sagar31658/Monaa.git"
+  },
+  "author": "Sagar Parmar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sagar31658/Monaa/issues"
+  },
+  "homepage": "https://github.com/Sagar31658/Monaa#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2",
+    "multer": "^1.4.5-lts.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemon": "^3.1.9"
+  }
+}
