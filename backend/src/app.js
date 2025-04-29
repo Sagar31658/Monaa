@@ -1,19 +1,22 @@
 import express from 'express';
-import authRoutes from './routes/auth.routes.js';
-
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// API Routes
+app.get("/", (req, res) => {
+    res.status(200).json({
+      message: "Hello, World!"
+    });
+  });
+
+// Auth Routes
+import authRoutes from './routes/auth.routes.js';
 app.use('/api/v1/auth', authRoutes);
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Hello, World!"
-  });
-});
+// Transaction APIs
+import transactionRoutes from './routes/transaction.routes.js';
+app.use('/api/v1/transactions', transactionRoutes);
 
 export default app;

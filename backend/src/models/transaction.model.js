@@ -1,49 +1,50 @@
-import mongoose, {Schema} from 'mongoose'
+import mongoose from 'mongoose';
 
-const transactionSchema = new Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    type: {
-        type: String,
-        enum: ['credit', 'debit'],
-        required: [true, 'Transaction type is required']
-    },
-    amount: {
-        type: Number,
-        required: [true, 'Amount is required'],
-        min: [0, 'Amount must be a positive number']
-    },
-    category: {
-        type: String,
-        enum: [
-            'salary',
-            'business',
-            'investment',
-            'gift',
-            'groceries',
-            'rent',
-            'utilities',
-            'entertainment',
-            'transportation',
-            'health',
-            'shopping',
-            'other'
-        ],
-        required: [true, 'Category is required']
-    },
-    note: {
-        type: String,
-        trim: true,
-        maxlength: [100, 'Note cannot exceed 100 characters']
-    }
-}, { timestamps: true }
-);
+const transactionSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  budget: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Budget',
+    default: null
+  },
+  amount: {
+    type: Number,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['income', 'expense'],
+    required: true
+  },
+  category: {
+    type: String,
+    required: true
+  },
+  smartCategoryTag: {
+    type: String,
+    default: null
+  },
+  description: {
+    type: String,
+    default: ""
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  createdFrom: {
+    type: String,
+    enum: ['voice', 'manual'],
+    default: 'manual'
+  },
+  predictedOverrun: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true });
 
-module.exports = mongoose.model('Transaction', transactionSchema);
-
-transactionSchema.virtual('month').get(function() {
-    return this.date.getMonth() + 1;
-});
+export const Transaction = mongoose.model('Transaction', transactionSchema);
