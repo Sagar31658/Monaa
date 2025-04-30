@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { TRANSACTION_TYPES } from '../config/constant.js';
+
 
 const transactionSchema = new mongoose.Schema({
   user: {
@@ -17,7 +19,7 @@ const transactionSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['income', 'expense'],
+    enum: Object.values(TRANSACTION_TYPES),
     required: true
   },
   category: {

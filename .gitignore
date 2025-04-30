@@ -1,0 +1,3 @@
+# Ignore both training and final model folders
+MonaaAI/monaa-t5/
+MonaaAI/monaa-t5-final/

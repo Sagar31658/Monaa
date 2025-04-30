@@ -19,4 +19,12 @@ app.use('/api/v1/auth', authRoutes);
 import transactionRoutes from './routes/transaction.routes.js';
 app.use('/api/v1/transactions', transactionRoutes);
 
+// Budget APIs
+import budgetRoutes from './routes/budget.routes.js';
+app.use('/api/v1/budgets', budgetRoutes);
+
+// Recurring Items APIs
+import recurringItemRoutes from './routes/recurringItem.routes.js';
+app.use('/api/v1/recurring-items', recurringItemRoutes);
+
 export default app;

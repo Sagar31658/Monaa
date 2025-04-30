@@ -13,6 +13,7 @@ export const categories = {
       "Education",
       "Insurance",
       "Subscriptions",
+      "Mortgage",
       "Other"
     ],
     income: [
@@ -26,3 +27,9 @@ export const categories = {
     ]
   };
   
+export const TRANSACTION_TYPES = {
+    INCOME: 'income',
+    EXPENSE: 'expense'
+  };
+  
+export const FREQUENCY_TYPES = ['daily', 'weekly', 'monthly', 'yearly'];
