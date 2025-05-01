@@ -1,10 +1,10 @@
 from fastapi import APIRouter
-from app.models.t5_model import predict_transaction
 from app.schemas.transaction import TransactionRequest, TransactionResponse
+from app.services.inference import extract_transaction_details
 
 router = APIRouter(tags=["Transaction NLP"])
 
 @router.post("/predict-text", response_model=TransactionResponse)
 def predict_from_text(req: TransactionRequest):
-    result = predict_transaction(req.text)
-    return TransactionResponse(raw_output=result)
+    parsed = extract_transaction_details(req.text)
+    return {"raw_output": str(parsed)}

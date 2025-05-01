@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File
-from app.models.whisper_stt import transcribe_audio
-from app.models.t5_model import predict_transaction
+from app.model.whisper_stt import transcribe_audio
+from app.services.inference import extract_transaction_details
 from app.schemas.voice import VoiceResponse
 
 router = APIRouter(tags=["Voice-to-Transaction"])
@@ -10,5 +10,5 @@ def predict_from_voice(audio: UploadFile = File(...)):
     transcript = transcribe_audio(audio)
     if transcript.lower().startswith("error"):
         return VoiceResponse(transcript=transcript, raw_output="")
-    result = predict_transaction(transcript)
-    return VoiceResponse(transcript=transcript, raw_output=result)
+    parsed = extract_transaction_details(transcript)
+    return VoiceResponse(transcript=transcript, raw_output=str(parsed))

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Sagar31658/Monaa#readme",
   "dependencies": {
+    "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.0",
     "cookie-parser": "^1.4.7",

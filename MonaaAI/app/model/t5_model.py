@@ -1,18 +1,12 @@
-from transformers import T5ForConditionalGeneration, T5Tokenizer
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+from app.core.config import settings
 import torch
 
-MODEL_PATH = "./monaa-t5-final"
-
-try:
-    tokenizer = T5Tokenizer.from_pretrained(MODEL_PATH)
-    model = T5ForConditionalGeneration.from_pretrained(MODEL_PATH)
-    model.eval()
-except Exception as e:
-    raise RuntimeError(f"Failed to load T5 model: {e}")
+tokenizer = T5Tokenizer.from_pretrained(settings.MODEL_PATH)
+model = T5ForConditionalGeneration.from_pretrained(settings.MODEL_PATH)
+model.eval()
 
 def predict_transaction(text: str) -> str:
-    if not text.strip():
-        return "Error: input text is empty."
     prompt = f"extract transaction: {text}"
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=128)
     with torch.no_grad():
