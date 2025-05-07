@@ -69,7 +69,8 @@ export const registerUser = asyncHandler(async (req, res) => {
       email: newUser.email,
       profilePhoto: newUser.profilePhoto,
       voicePreference: newUser.voicePreference,
-      createdAt: newUser.createdAt
+      createdAt: newUser.createdAt,
+      accessToken
     }, "User registered and logged in successfully"));
 });
 
@@ -114,7 +115,8 @@ export const loginUser = asyncHandler(async (req, res) => {
         email: user.email,
         profilePhoto: user.profilePhoto,
         voicePreference: user.voicePreference,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        accessToken
       }, "User logged in successfully"));
   });
   
@@ -145,7 +147,10 @@ export const logoutUser = asyncHandler(async (req, res) => {
   
 // Refresh Access Token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies?.refreshToken;
+    const incomingRefreshToken = 
+    req.cookies?.refreshToken || 
+    req.body?.refreshToken || 
+    req.headers['x-refresh-token'];
   
     if (!incomingRefreshToken) {
       throw new ApiError(401, "Refresh token missing");
