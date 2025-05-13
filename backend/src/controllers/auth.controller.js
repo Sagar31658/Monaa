@@ -241,3 +241,22 @@ export const resetPassword = asyncHandler(async (req, res) => {
     new ApiResponse(200, null, "Password reset successfully")
   );
 });
+
+// Get current logged-in user
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw new ApiError(401, 'User not authenticated');
+  }
+
+  const user = await User.findById(userId).select(
+    '_id firstName lastName email profilePhoto voicePreference createdAt'
+  );
+
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  res.status(200).json(new ApiResponse(200, user, 'User profile fetched successfully'));
+});

@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, logoutUser, refreshAccessToken, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
+import { registerUser, loginUser, logoutUser, refreshAccessToken, forgotPassword, resetPassword, getCurrentUser } from '../controllers/auth.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
@@ -20,5 +20,8 @@ router.post('/refresh-token', refreshAccessToken);
 // Forgot - Reset Password
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:resetToken', resetPassword);
+
+// Get current user profile
+router.get('/me', verifyJWT, getCurrentUser);
 
 export default router;

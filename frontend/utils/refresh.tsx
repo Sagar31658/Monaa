@@ -1,26 +1,20 @@
-import { getAuthToken, saveAuthToSecureStore, getUserFromSecureStore } from './Auth';
+import { getUserFromSecureStore, saveAuthToSecureStore } from './Auth';
+import { Backend } from '../constants/backendUri';
 
-export const refreshAccessToken = async () => {
-  const user = await getUserFromSecureStore();
-  const refreshToken = user?.refreshToken;
-
-  if (!refreshToken) return false;
-
+export const refreshAccessToken = async (): Promise<boolean> => {
   try {
-    const res = await fetch('http://192.168.X.X:3000/api/v1/user/refresh-access-token', {
-      method: 'GET',
-      headers: {
-        'x-refresh-token': refreshToken,
-      },
+    const res = await fetch(`${Backend}/auth/refresh-token`, {
+      method: 'POST',
+      credentials: 'include', // 🔐 sends cookie
     });
 
     const data = await res.json();
-    if (res.ok) {
-      await saveAuthToSecureStore(data?.data?.accessToken, user); // update token only
-      return true;
-    } else {
-      return false;
-    }
+
+    if (!res.ok || !data?.accessToken) return false;
+
+    const user = await getUserFromSecureStore();
+    await saveAuthToSecureStore(data.accessToken, user || {});
+    return true;
   } catch {
     return false;
   }

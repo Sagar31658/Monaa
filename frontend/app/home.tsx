@@ -26,29 +26,31 @@ export default function HomeScreen() {
 
   const router = useRouter();
 
+  const loadTransactions = async () => {
+    const res = await fetchWithAuth(`${Backend}/transactions`);
+    const data = await res.json();
+    const txs = data?.data || [];
+  
+    const budgetRes = await fetchWithAuth(`${Backend}/budgets`);
+    const budgetData = await budgetRes.json();
+    const activeBudget = budgetData?.data?.find((b: any) => b.isActive);
+  
+    if (activeBudget) {
+      setBudgetAmount(activeBudget.amount);
+      setRemainingBudget(activeBudget.remainingAmount);
+    }
+  
+    setTransactions(txs.slice(0, 6));
+  
+    const thisMonth = new Date().getMonth();
+    const total = txs
+      .filter((tx: any) => tx.type === 'expense' && new Date(tx.date).getMonth() === thisMonth)
+      .reduce((sum: number, tx: any) => sum + tx.amount, 0);
+    setTotalExpense(total);
+  };
+
   useEffect(() => {
-    (async () => {
-      const res = await fetchWithAuth(`${Backend}/transactions`);
-      const data = await res.json();
-      const txs = data?.data || [];
-
-      const budgetRes = await fetchWithAuth(`${Backend}/budgets`);
-      const budgetData = await budgetRes.json();
-      const activeBudget = budgetData?.data?.find((b: any) => b.isActive);
-
-      if (activeBudget) {
-        setBudgetAmount(activeBudget.amount);
-        setRemainingBudget(activeBudget.remainingAmount);
-      }
-
-      setTransactions(txs.slice(0, 6));
-
-      const thisMonth = new Date().getMonth();
-      const total = txs
-        .filter((tx: any) => tx.type === 'expense' && new Date(tx.date).getMonth() === thisMonth)
-        .reduce((sum: number, tx: any) => sum + tx.amount, 0);
-      setTotalExpense(total);
-    })();
+    loadTransactions();
   }, []);
 
   const chartData = {
@@ -215,8 +217,8 @@ export default function HomeScreen() {
   visible={manualModalVisible}
   onClose={() => setManualModalVisible(false)}
   onTransactionAdded={() => {
+    loadTransactions();
     setManualModalVisible(false);
-    // Optional: refresh transactions here if needed
   }}
 />
     </View>
