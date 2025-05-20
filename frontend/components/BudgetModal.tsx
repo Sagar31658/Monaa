@@ -33,6 +33,7 @@ export default function BudgetModal({ visible, onClose, onBudgetChange }: Budget
 
   const fetchBudgets = async () => {
     const res = await fetchWithAuth(`${Backend}/budgets`);
+    if (!res) throw new Error("Request failed");
     const json = await res.json();
     const budget = json?.data?.find((b: any) => b.isActive);
     if (budget) setActiveBudget(budget);
@@ -54,7 +55,7 @@ export default function BudgetModal({ visible, onClose, onBudgetChange }: Budget
         warningThreshold: threshold || 80,
       }),
     });
-
+    if (!res) throw new Error("Request failed");
     if (res.ok) {
       Alert.alert('Budget created!');
       fetchBudgets();
@@ -64,6 +65,7 @@ export default function BudgetModal({ visible, onClose, onBudgetChange }: Budget
       setThreshold('');
       onBudgetChange?.();
     } else {
+      if (!res) throw new Error("Request failed");
       const error = await res.json();
       Alert.alert('Error', error.message || 'Failed to create budget');
     }
@@ -74,7 +76,7 @@ export default function BudgetModal({ visible, onClose, onBudgetChange }: Budget
     const res = await fetchWithAuth(`${Backend}/budgets/${activeBudget._id}`, {
       method: 'DELETE',
     });
-
+    if (!res) throw new Error("Request failed");
     if (res.ok) {
       Alert.alert('Budget deleted');
       setActiveBudget(null);

@@ -49,7 +49,7 @@ const ManualTransactionModal: React.FC<Props> = ({
     }
 
     try {
-      const response = await fetchWithAuth(`${Backend}/transactions`, {
+      const res = await fetchWithAuth(`${Backend}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -60,8 +60,8 @@ const ManualTransactionModal: React.FC<Props> = ({
           date,
         }),
       });
-
-      if (!response.ok) throw new Error('Failed to create transaction');
+      if (!res) throw new Error("Request failed");
+      if (!res.ok) throw new Error('Failed to create transaction');
 
       Alert.alert('Transaction added!');
       setAmount('');

@@ -28,10 +28,14 @@ export default function HomeScreen() {
 
   const loadTransactions = async () => {
     const res = await fetchWithAuth(`${Backend}/transactions`);
+    if (!res) throw new Error('Failed to fetch transactions');
+  
     const data = await res.json();
     const txs = data?.data || [];
   
     const budgetRes = await fetchWithAuth(`${Backend}/budgets`);
+    if (!budgetRes) throw new Error('Failed to fetch budgets');
+  
     const budgetData = await budgetRes.json();
     const activeBudget = budgetData?.data?.find((b: any) => b.isActive);
   
@@ -40,7 +44,7 @@ export default function HomeScreen() {
       setRemainingBudget(activeBudget.remainingAmount);
     }
   
-    setTransactions(txs.slice(0, 6));
+    setTransactions(txs.slice(0, 5));
   
     const thisMonth = new Date().getMonth();
     const total = txs
@@ -48,7 +52,7 @@ export default function HomeScreen() {
       .reduce((sum: number, tx: any) => sum + tx.amount, 0);
     setTotalExpense(total);
   };
-
+  
   useEffect(() => {
     loadTransactions();
   }, []);
@@ -74,6 +78,7 @@ export default function HomeScreen() {
 
   const refreshBudgetAmount = async () => {
     const res = await fetchWithAuth(`${Backend}/budgets`);
+    if (!res) throw new Error("Request failed");
     const data = await res.json();
     const activeBudget = data?.data?.find((b: any) => b.isActive);
     if (activeBudget) {
@@ -82,7 +87,17 @@ export default function HomeScreen() {
       setBudgetAmount(0);
     }
   };
+
+  const progress = budgetAmount > 0
+  ? Math.min(1, Math.max(0, (budgetAmount - remainingBudget) / budgetAmount))
+  : 0;
   
+  const getProgressColor = (p: number) => {
+    if (p <= 0.3) return '#50c878'; // green
+    if (p <= 0.6) return '#f4c430'; // yellow
+    if (p <= 0.9) return '#ff8c00'; // orange
+    return '#ff4d4d'; // red
+  };
 
   return (
     <View style={styles.container}>
@@ -133,14 +148,16 @@ export default function HomeScreen() {
         <Text style={styles.budgetAmount}>${budgetAmount.toFixed(2)}</Text>
       </View>
       <View style={{ marginTop: 8, marginLeft:20 }}>
+      {budgetAmount > 0 && (
   <Progress.Bar
-    progress={(budgetAmount - remainingBudget) / budgetAmount}
+    progress={progress}
     width={180}
-    color="#50c878"
+    color={getProgressColor(progress)}
     unfilledColor="#e0e0e0"
     borderWidth={0}
     height={8}
   />
+)}
   <Text style={{ fontSize: 12, color: '#555', marginTop: 4 }}>
     Remaining: ${remainingBudget.toFixed(2)} of ${budgetAmount.toFixed(2)}
   </Text>

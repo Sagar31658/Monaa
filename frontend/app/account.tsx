@@ -23,6 +23,7 @@ export default function ProfileScreen() {
     const fetchUser = async () => {
       try {
         const res = await fetchWithAuth(`${Backend}/auth/me`);
+        if (!res) throw new Error("Request failed");
         const data = await res.json();
         setUser(data?.data);
       } catch (err) {

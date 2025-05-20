@@ -1,21 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getAuthToken } from '../utils/Auth';
 
-export default function IndexScreen() {
+export default function AuthEntryPoint() {
   const router = useRouter();
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
+    const bootstrap = async () => {
       const token = await getAuthToken();
       if (token) {
-        router.replace('/home');
+        router.replace('/home'); // ✅ Authenticated
       } else {
-        router.replace('/onboarding');
+        router.replace('/login'); // ❌ Not authenticated
       }
+      setChecking(false);
     };
-    checkSession();
+    bootstrap();
   }, []);
 
   return (
