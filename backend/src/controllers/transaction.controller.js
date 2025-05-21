@@ -15,20 +15,53 @@ export const createTransaction = asyncHandler(async (req, res) => {
   // If voice input is used, parse from voice
   if (req.file) {
     const filePath = req.file.path;
-    const prediction = await getTransactionFromAudio(filePath);
+    const response = await getTransactionFromAudio(filePath);
     fs.unlinkSync(filePath);
-
+    const prediction = response[0]
+    const desc = response[1]
     if (!prediction) {
       throw new ApiError(500, 'Voice transaction failed to parse');
     }
-
+    
     const parsed = Object.fromEntries(
       prediction.split(', ').map((s) => s.split(': ').map((x) => x.trim()))
     );
 
+    //WOrk around temporary:
+    const categoryMap = {
+      bonus: "Bonus",
+      education: "Education",
+      entertainment: "Entertainment",
+      food_and_dining: "Food & Dining",
+      freelance: "Freelance",
+      gift: "Gift",
+      groceries: "Groceries",
+      healthcare: "Healthcare",
+      insurance: "Insurance",
+      interest: "Interest",
+      investment: "Investment",
+      misc: "Other",
+      mortgage: "Mortgage",
+      other: "Other",
+      rent: "Rent",
+      salary: "Salary",
+      shopping: "Shopping",
+      subscriptions: "Subscriptions",
+      transportation: "Transportation",
+      travel: "Travel",
+      utilities: "Utilities"
+    };
+    
+    const normalizeCategory = (rawCategory) => {
+      if (!rawCategory) return rawCategory;
+      return categoryMap[rawCategory.toLowerCase()] || rawCategory;
+    };
+    
+
     amount = parseFloat(parsed.amount);
     type = parsed.type;
-    category = parsed.category;
+    description=desc;
+    category = normalizeCategory(parsed.category);
     date = parsed.date || date;
     createdFrom = 'voice';
   }
@@ -107,7 +140,16 @@ export const deleteTransaction = asyncHandler(async (req, res) => {
   if (transaction.user.toString() !== req.user._id.toString()) {
     throw new ApiError(403, 'Unauthorized to delete this transaction');
   }
+  if (transaction.type === 'expense' && transaction.budget) {
+    const budget = await Budget.findById(transaction.budget);
+    if (budget) {
+      budget.remainingAmount += transaction.amount;
+      await budget.save();
+    }
+  }
+
   await transaction.deleteOne();
+
   res.status(200).json(
     new ApiResponse(200, null, 'Transaction deleted successfully.')
   );

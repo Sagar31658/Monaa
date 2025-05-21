@@ -11,7 +11,7 @@ export const getTransactionFromAudio = async (filePath) => {
       headers: form.getHeaders()
     });
 
-    return data.raw_output;
+    return [data.raw_output,data.transcript];
   } catch (error) {
     console.error("❌ FastAPI error:", error.response?.data || error.message);
     return null;

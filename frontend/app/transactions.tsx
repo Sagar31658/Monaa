@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   StatusBar
 } from 'react-native';
+import { Swipeable, RectButton } from 'react-native-gesture-handler';
+
 import { useRouter } from 'expo-router';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 import { Backend } from '../constants/backendUri';
@@ -41,6 +43,32 @@ export default function TransactionsScreen() {
     })();
   }, []);
 
+  const handleDelete = async (id: string) => {
+    try {
+      await fetchWithAuth(`${Backend}/transactions/${id}`, {
+        method: 'DELETE',
+      });
+      // Refresh the list after deletion
+      setGroupedTransactions((prev) =>
+        prev.map(section => ({
+          ...section,
+          data: section.data.filter(tx => tx._id !== id),
+        })).filter(section => section.data.length > 0)
+      );
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
+
+  const renderRightActions = (id: string) => (
+    <RectButton
+      style={styles.deleteButton}
+      onPress={() => handleDelete(id)}
+    >
+      <Text style={styles.deleteButtonText}>Delete</Text>
+    </RectButton>
+  );
+
   return (
     <>
         <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -50,6 +78,7 @@ export default function TransactionsScreen() {
           sections={groupedTransactions}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
+            <Swipeable renderRightActions={() => renderRightActions(item._id)}>
             <View style={styles.transactionItem}>
               <View>
                 <Text style={styles.category}>{item.category}</Text>
@@ -61,6 +90,7 @@ export default function TransactionsScreen() {
                 </Text>
               </View>
             </View>
+            </Swipeable>
           )}
           renderSectionHeader={({ section: { title } }) => (
             <Text style={styles.sectionHeader}>{title}</Text>
@@ -131,5 +161,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingHorizontal: 20,
+    flex: 1,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
