@@ -17,16 +17,19 @@ export const createTransaction = asyncHandler(async (req, res) => {
     const filePath = req.file.path;
     const response = await getTransactionFromAudio(filePath);
     fs.unlinkSync(filePath);
-    const prediction = response[0]
-    const desc = response[1]
-    if (!prediction) {
+    const rawPrediction = response[0];
+    const desc = response[1];
+    if (!rawPrediction) {
       throw new ApiError(500, 'Voice transaction failed to parse');
     }
-    
-    const parsed = Object.fromEntries(
-      prediction.split(', ').map((s) => s.split(': ').map((x) => x.trim()))
-    );
-
+    console.log(rawPrediction,desc)    
+    const cleaned = rawPrediction
+    .replace(/^{|}$/g, '')
+    .replace(/'/g, '')
+    .split(', ')
+    .map((pair) => pair.split(':').map((x) => x.trim()));
+    const parsed = Object.fromEntries(cleaned);
+    console.log(parsed)
     //WOrk around temporary:
     const categoryMap = {
       bonus: "Bonus",
@@ -58,14 +61,15 @@ export const createTransaction = asyncHandler(async (req, res) => {
     };
     
 
-    amount = parseFloat(parsed.amount);
+    amount = Number(parsed.amount);
     type = parsed.type;
-    description=desc;
     category = normalizeCategory(parsed.category);
+    description = desc;
     date = parsed.date || date;
     createdFrom = 'voice';
-  }
 
+  }
+  console.log(amount,type,category)
   if (!amount || !type || !category) {
     throw new ApiError(400, 'Amount, type and category are required fields.');
   }

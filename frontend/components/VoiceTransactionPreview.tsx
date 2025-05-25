@@ -9,17 +9,19 @@ import {
 } from 'react-native';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 import { Backend } from '../constants/backendUri';
+import { InteractionManager } from 'react-native';
+
 
 interface Props {
   visible: boolean;
   data: any;
   onClose: () => void;
+  onConfirmed?: () => void;
 }
 
-const VoiceConfirmModal: React.FC<Props> = ({ visible, data, onClose }) => {
+const VoiceConfirmModal: React.FC<Props> = ({ visible, data, onClose, onConfirmed }) => {
   const handleConfirm = async () => {
     try {
-        console.log(data)
       const res = await fetchWithAuth(`${Backend}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,13 +33,18 @@ const VoiceConfirmModal: React.FC<Props> = ({ visible, data, onClose }) => {
           date: new Date(),
           createdFrom: 'voice',
         }),
-});
+      });
+  
       if (!res) throw new Error("Request failed");
       if (!res.ok) throw new Error('Failed to create transaction');
-
+  
       Alert.alert('Transaction added!');
-
+  
+      // SAFELY wait before dismissing modals and refreshing
       onClose();
+      InteractionManager.runAfterInteractions(() => {
+        onConfirmed?.();
+      });
     } catch (error) {
       Alert.alert('Error', 'Something went wrong.');
     }
