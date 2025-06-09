@@ -70,6 +70,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 24, textAlign: 'center' },
   input: { marginBottom: 16 },
-  button: { marginVertical: 16 },
-  link: { textAlign: 'center', color: '#007AFF' },
+  button: { marginVertical: 16, backgroundColor:'#50c878' },
+  link: { textAlign: 'center', color: '#50c878' },
 });

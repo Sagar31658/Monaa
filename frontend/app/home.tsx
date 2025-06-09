@@ -30,9 +30,12 @@ export default function HomeScreen() {
   const [graphLabels, setGraphLabels] = useState<string[]>([]);
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<number>(dayjs().month());
+  const [allBudgets, setAllBudgets] = useState<any[]>([]);
+
 
   const router = useRouter();
   const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i).format('MMM'));
+  const isCurrentMonth = selectedMonth === dayjs().month();
 
   const updateMonthData = (txs: any[], month: number) => {
     const filtered = txs.filter((tx: any) => dayjs(tx.date).month() === month);
@@ -122,8 +125,16 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         {/* Right Arrow */}
-        <TouchableOpacity style={styles.arrowRight} onPress={() => changeMonth('right')}>
-          <Ionicons name="chevron-forward" size={28} color="white" />
+        <TouchableOpacity
+          style={[styles.arrowRight, isCurrentMonth && styles.disabledArrow]}
+          onPress={() => !isCurrentMonth && changeMonth('right')}
+          disabled={isCurrentMonth}
+        >
+          <Ionicons
+            name="chevron-forward"
+            size={28}
+            color={isCurrentMonth ? 'rgba(255,255,255,0.4)' : 'white'}
+          />
         </TouchableOpacity>
         <View style={StyleSheet.absoluteFill}>
           <LineChart
@@ -147,10 +158,10 @@ export default function HomeScreen() {
           data={months}
           scrollAnimationDuration={300}
           onSnapToItem={(index) => setSelectedMonth(index)}
-          style={{ marginTop: 16 }}
+          style={{ marginBottom: 80 }}
           renderItem={({ item }) => (
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={styles.monthLabel}>{}</Text>
+              <Text style={styles.monthLabel}>{months[selectedMonth]}</Text>
             </View>
           )}
           defaultIndex={selectedMonth}
@@ -191,6 +202,7 @@ export default function HomeScreen() {
             <Text style={styles.seeAll}>See All</Text>
           </TouchableOpacity>
         </View>
+        {transactions.length > 0 ? 
         <FlatList
           data={transactions}
           keyExtractor={(item) => item._id}
@@ -207,6 +219,7 @@ export default function HomeScreen() {
             </View>
           )}
         />
+        : <Text style={styles.notTransaction}>No Transaction This Month</Text>}
       </View>
 
       <View style={styles.footer}>
@@ -264,6 +277,7 @@ const styles = StyleSheet.create({
   historyHeader: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10 },
   historyTitle: { fontSize: 16, fontWeight: 'bold' },
   seeAll: { color: '#00C781' },
+  notTransaction:{textAlign: 'center', alignItems: 'center', color:'#777'},
   transactionItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderColor: '#eee' },
   category: { fontSize: 16, fontWeight: '600' },
   description: { fontSize: 14, color: '#666', marginTop: 2 },
@@ -293,5 +307,7 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 20,
   },
-  
+  disabledArrow: {
+    opacity: 0.4,
+  }
 });

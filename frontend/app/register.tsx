@@ -66,6 +66,13 @@ export default function RegisterScreen() {
     }
   };
 
+  const isFormValid =
+  firstName.trim() &&
+  lastName.trim() &&
+  email.trim() &&
+  password.trim() &&
+  imageUri;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create your Monaa account</Text>
@@ -90,7 +97,16 @@ export default function RegisterScreen() {
         <Image source={{ uri: imageUri }} style={{ width: 100, height: 100, borderRadius: 50, marginVertical: 10, alignSelf: 'center' }} />
       )}
 
-      <Button mode="contained" onPress={handleRegister} style={styles.button}>Register</Button>
+      
+
+      <Button
+        mode="contained"
+        onPress={handleRegister}
+        disabled={!isFormValid}
+        style={[styles.button, { backgroundColor: isFormValid ? '#50c878' : 'grey' }]}
+      >
+        Register
+      </Button>
 
       <TouchableOpacity onPress={() => router.push('/login')}>
         <Text style={styles.link}>Already have an account? Login</Text>
@@ -101,10 +117,10 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 24, textAlign: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 24, textAlign: 'center', color:'#50c878' },
   input: { marginBottom: 16 },
-  label: { marginTop: 12, fontSize: 16, fontWeight: '600' },
-  radioGroup: { marginVertical: 8 },
-  button: { marginVertical: 16 },
-  link: { textAlign: 'center', color: '#007AFF' },
+  label: { marginTop: 12, fontSize: 16, fontWeight: '600', color: '#50c878' },
+  radioGroup: { marginVertical: 8, backgroundColor: 'black' },
+  button: { marginVertical: 16, backgroundColor:'#50c878' },
+  link: { textAlign: 'center', color: '#50c878' },
 });

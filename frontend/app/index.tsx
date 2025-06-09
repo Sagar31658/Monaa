@@ -11,9 +11,9 @@ export default function AuthEntryPoint() {
     const bootstrap = async () => {
       const token = await getAuthToken();
       if (token) {
-        router.replace('/home'); // ✅ Authenticated
+        router.replace('/home');
       } else {
-        router.replace('/login'); // ❌ Not authenticated
+        router.replace('/login');
       }
       setChecking(false);
     };

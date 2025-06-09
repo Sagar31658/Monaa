@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 import { Backend } from '../constants/backendUri';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
@@ -20,20 +20,20 @@ export default function ProfileScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserProfile = async () => {
       try {
         const res = await fetchWithAuth(`${Backend}/auth/me`);
-        if (!res) throw new Error("Request failed");
+        if (!res) throw new Error('Request failed');
         const data = await res.json();
         setUser(data?.data);
-      } catch (err) {
-        console.error('Failed to fetch user profile', err);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
+    fetchUserProfile();
   }, []);
 
   if (loading) {
@@ -52,7 +52,11 @@ export default function ProfileScreen() {
 
       <View style={styles.profileHeader}>
         <Image
-          source={user?.profilePhoto?.url ? { uri: user.profilePhoto.url } : require('../assets/images/avatar.avif')}
+          source={
+            user?.profilePhoto?.url
+              ? { uri: user.profilePhoto.url }
+              : require('../assets/images/avatar.avif')
+          }
           style={styles.avatar}
         />
         <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
@@ -67,12 +71,13 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-
       <View style={styles.infoSection}>
         <Text style={styles.sectionTitle}>Profile Details</Text>
         <View style={styles.infoItem}>
           <Ionicons name="calendar-outline" size={20} color="#555" style={styles.icon} />
-          <Text style={styles.infoText}>Created At: {new Date(user?.createdAt).toDateString()}</Text>
+          <Text style={styles.infoText}>
+            Created At: {new Date(user?.createdAt).toDateString()}
+          </Text>
         </View>
       </View>
 
@@ -83,9 +88,9 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    top:50,
-    padding: 20,
     paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
     backgroundColor: '#fff',
   },
   centered: {
